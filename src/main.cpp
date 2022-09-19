@@ -1,8 +1,6 @@
 #include <Arduino.h>
 #include <motor.h>
 
-
-
 int motor::count = 0;
 
 motor motor1;
