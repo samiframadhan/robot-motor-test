@@ -24,7 +24,7 @@ int motor::absolute(int value){
     return value;
 }
 
-int motor::set_pwm(int pwm_val){
+int motor::set_pwm(int &pwm_val){
     if(pwm_val > 0){
         pwm.write(motorpins[0], pwm_val);
     } else {
@@ -42,5 +42,4 @@ int motor::getpin2(){
 }
 
 motor::motor(){
-    count++;
 }

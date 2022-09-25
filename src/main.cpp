@@ -1,97 +1,74 @@
 #include <Arduino.h>
 #include <motor.h>
 
-int motor::count = 0;
-
+QueueHandle_t buffer;
 motor motor1;
+motor motor2;
 
-void printPins(){
-  Serial.print("Pin1 : ");
-  Serial.println(motor1.getpin1());
-  Serial.print("Pin 2: ");
-  Serial.println(motor1.getpin2());
-}
-
-void test_pwm(){
-  for (int i = 0; i < 20; i++)
-  {
-    if (i > 10)
-    {
-      int temp = (i-20)*-20;
-      int temp2 = motor1.set_pwm(temp);
-      Serial.print("Forward in: ");
-      Serial.println(temp2);
-      Serial.println(temp);
-      vTaskDelay(200 / portTICK_RATE_MS);
-    } else
-    {
-      int temp = i*20;
-      int temp2 = motor1.set_pwm(temp);
-      Serial.print("Forward in: ");
-      Serial.println(temp2);
-      Serial.println(temp);
-      vTaskDelay(200 / portTICK_RATE_MS);
-    }
-  }
-  for (int i = 0; i < 20; i++)
-  {
-    if (i > 10)
-    {
-      int temp = (20-i)*-20;
-      int temp2 = motor1.set_pwm(temp);
-      Serial.print("Reverse in: ");
-      Serial.println(temp2);
-      Serial.println(temp);
-      vTaskDelay(200 / portTICK_RATE_MS); 
-    } else
-    {
-      int temp = -i * 20;
-      int temp2 = motor1.set_pwm(temp);
-      Serial.print("Reverse in: ");
-      Serial.println(temp2);
-      Serial.println(temp);
-      vTaskDelay(200 / portTICK_RATE_MS);
-    }
-  }
-}
-
-void test_pin_pwm(int pwm_pin){
-  for (int i = 0; i < 20; i++)
-  {
-    if (i > 10)
-    {
-      int temp = (i-20)*-20;
-      motor1.pwm.write(pwm_pin, temp);
-      Serial.print("PWM in: ");
-      Serial.println(pwm_pin);
-      vTaskDelay(200 / portTICK_RATE_MS);
-    } else
-    {
-      int temp = i*20;
-      motor1.pwm.write(pwm_pin, temp);
-      Serial.print("PWM in: ");
-      Serial.println(pwm_pin);
-      vTaskDelay(200 / portTICK_RATE_MS);
-    }
-  }
-}
+void TaskMonitor(void *pvParam);
+void TaskExecute(void *pvParam);
 
 void setup() {
   // put your setup code here, to run once:
-  motor1.set_pins(17, 5);
   Serial.begin(115200);
+
+  buffer = xQueueCreate(100, sizeof(int));
+
+  motor1.set_pins(17, 5);
+  motor2.set_pins(19,18);
+
+  xTaskCreatePinnedToCore(
+    TaskMonitor,
+    "Monitor",
+    1024,
+    NULL,
+    1,
+    NULL,
+    ARDUINO_RUNNING_CORE
+  );
+
+  xTaskCreatePinnedToCore(
+    TaskExecute,
+    "Execute",
+    1024,
+    NULL,
+    1,
+    NULL,
+    ARDUINO_RUNNING_CORE
+  );
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  // // test_pwm();
-  if(Serial.available() > 0){
-    int tmp = Serial.parseInt();
-    int tmp2 = motor1.set_pwm(tmp);
-    Serial.println(tmp2);
-  } else{
-    // motor1.set_pwm(0);
-    motor1.pwm.write(motor1.motorpins[0], 0);
-    motor1.pwm.write(motor1.motorpins[1], 0);
+}
+
+void TaskMonitor(void *pvParam){
+  int test1;
+  
+  while (1)
+  {
+    if (Serial.available() > 0)
+    {
+      test1 = Serial.parseInt();
+      Serial.println(test1);
+      if (xQueueSend(buffer, &test1, 10) != pdTRUE)
+      {
+        Serial.printf("Queue full");
+      }
+    }
+  }
+}
+
+void TaskExecute(void *pvParam){
+  int test2;
+  while (1)
+  {
+    if (xQueueReceive(buffer, &test2, 0) == pdTRUE)
+    {
+      Serial.println("Queue received!");
+      Serial.println(test2);
+      motor1.set_pwm(test2);
+      motor2.set_pwm(test2);
+    }  
   }
 }

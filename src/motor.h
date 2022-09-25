@@ -12,8 +12,6 @@ class motor
 private:
     
 public:
-    static int count;
-    
 
     Pwm pwm = Pwm();
     float freq = 800;
@@ -22,7 +20,7 @@ public:
     void set_pins(int (&pins)[2]);
     void set_pins(int pin1, int pin2);
     
-    int set_pwm(int pwm_val);
+    int set_pwm(int &pwm_val);
     int getpin1();
     int getpin2();
     int absolute(int value);
