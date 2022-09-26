@@ -3,6 +3,7 @@
 Ticker setIndicator;
 rcl_publisher_t publisher;
 std_msgs__msg__Int32 msg;
+std_msgs__msg__UInt64 newmsg;
 rclc_support_t support;
 rcl_allocator_t allocator;
 rcl_node_t node;
@@ -45,7 +46,7 @@ void setupros(){
     ));
 
     RCCHECK(rclc_executor_add_timer(&executor, &timer));
-    RCCHECK(rclc_executor_spin_period(&executor, RCL_MS_TO_NS(100)));
+    // RCCHECK(rclc_executor_spin_period(&executor, RCL_MS_TO_NS(100)));
 
     msg.data = 0;
 }
@@ -66,4 +67,9 @@ void timerCb(rcl_timer_t *timer, int64_t last_timer_call){
         RCCHECK(rcl_publish(&publisher, &msg, NULL));
         msg.data++;
     }
+}
+
+void sendAData(uint64_t &data){
+    newmsg.data = data;
+    RCCHECK(rcl_publish(&publisher, &newmsg, NULL));
 }

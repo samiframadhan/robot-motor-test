@@ -12,10 +12,12 @@
 #include <rclc/rclc.h>
 #include <rclc/executor.h>
 #include <std_msgs/msg/int32.h>
+#include <std_msgs/msg/u_int64.h>
 #include <Ticker.h>
 
 #define RCCHECK(fn) { rcl_ret_t temp_rc = fn; if((temp_rc != RCL_RET_OK)){errorHandle();}}
 
 void setupros();
 void errorHandle();
+void sendAData(uint64_t &data);
 void timerCb(rcl_timer_t *timer, int64_t last_call_time);
