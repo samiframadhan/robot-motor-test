@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <motor.h>
+#include "ros_init.h"
 
 QueueHandle_t buffer;
 motor motor1;
@@ -13,6 +14,8 @@ void setup() {
   Serial.begin(115200);
 
   buffer = xQueueCreate(100, sizeof(int));
+
+  setupros();
 
   motor1.set_pins(17, 5);
   motor2.set_pins(19,18);
