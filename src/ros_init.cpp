@@ -9,7 +9,9 @@ rcl_node_t node;
 rcl_timer_t timer;
 rclc_executor_t executor;
 
-void setupros(){ //TODO: If not connected, don't restart ESP32. Report using serial
+//TODO: If not connected, don't restart ESP32. Report using serial
+//TODO: data not published
+void setupros(){ 
     IPAddress agent_ip(192, 168, 40, 103);
     pinMode(2, OUTPUT);
     const unsigned int pub_freq = 100;
@@ -43,13 +45,14 @@ void setupros(){ //TODO: If not connected, don't restart ESP32. Report using ser
     ));
 
     RCCHECK(rclc_executor_add_timer(&executor, &timer));
+    RCCHECK(rclc_executor_spin_period(&executor, RCL_MS_TO_NS(100)));
 
     msg.data = 0;
 }
 
 void togglePin(){
     digitalWrite(2, !digitalRead(2));
-    vTaskDelay(pdTICKS_TO_MS(100));
+    // vTaskDelay(pdTICKS_TO_MS(100));
 }
 
 void errorHandle(){
