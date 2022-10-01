@@ -3,7 +3,6 @@
 #include "ros_init.h"
 #include "encoder.h"
 
-QueueHandle_t buffer;
 motor motor1;
 motor motor2;
 encoder motor1_enc;
@@ -18,8 +17,6 @@ void setup() {
   Serial.begin(115200);
 
   motor1_enc.attach(motor1_enc_pin);
-
-  buffer = xQueueCreate(100, sizeof(int));
 
   motor1.set_pins(17, 5);
   motor2.set_pins(19,18);
@@ -68,10 +65,6 @@ void TaskMonitor(void *pvParam){
     {
       test1 = Serial.parseInt();
       Serial.println(test1);
-      if (xQueueSend(buffer, &test1, 10) != pdTRUE)
-      {
-        Serial.printf("Queue full");
-      }
     }
   }
 }
@@ -87,14 +80,6 @@ void TaskExecute(void *pvParam){
       Serial.println("Count :");
       Serial.println(motor1_enc.read());
     }
-    
-    if (xQueueReceive(buffer, &test2, 0) == pdTRUE)
-    {
-      Serial.println("Queue received!");
-      Serial.println(test2);
-      motor1.set_pwm(test2);
-      motor2.set_pwm(test2);
-    }  
   }
 }
 
