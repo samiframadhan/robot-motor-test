@@ -2,13 +2,13 @@
 #include <motor.h>
 #include "ros_init.h"
 #include "encoder.h"
+#include "task_monitor.h"
 
 motor motor1;
 motor motor2;
 encoder motor1_enc;
 int motor1_enc_pin = 12;
 
-void TaskMonitor(void *pvParam);
 void TaskExecute(void *pvParam);
 void TaskROS(void *pvParam);
 
@@ -54,19 +54,6 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-}
-
-void TaskMonitor(void *pvParam){
-  int test1;
-  
-  while (1)
-  {
-    if (Serial.available() > 0)
-    {
-      test1 = Serial.parseInt();
-      Serial.println(test1);
-    }
-  }
 }
 
 void TaskExecute(void *pvParam){
