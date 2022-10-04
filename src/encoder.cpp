@@ -8,12 +8,22 @@ void IRAM_ATTR encoderAISR(void *arg){
     {
         object->micro_last = start;
         object->micro_between_ticks = duration;
-        object->count++;
+        if (object->direction == 0) {
+            object->count--;
+        } else {
+            object->count++;
+        }
     }
 }
 
 uint64_t encoder::read(){
     return count;
+}
+
+uint64_t encoder::read_and_clear(){
+    uint64_t temp = count;
+    count = 0;
+    return temp;
 }
 
 void encoder::clear(){
@@ -25,6 +35,10 @@ void encoder::attach(int &pinE){
     pin = pinE;
     pinMode(pin, INPUT_PULLUP);
     attachInterruptArg(digitalPinToInterrupt(pin), encoderAISR, this, CHANGE);
+}
+
+void encoder::attach_direction(bool &dir){
+    direction = dir;
 }
 
 encoder::encoder(/* args */)
