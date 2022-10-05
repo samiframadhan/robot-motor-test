@@ -14,8 +14,8 @@ private:
     
 public:
 
-    Pwm pwm = Pwm();
-    encoder motor_enc;
+    static uint8_t channel;
+    uint8_t motor_pins_channel[2];
     float freq = 800;
     uint8_t res = 8;
     int motorpins[2]= {0,0};
@@ -23,12 +23,14 @@ public:
     bool direction = 0; //0 forward, 1 backward
     void set_pins(int (&pins)[2]);
     void set_pins(int pin1, int pin2);
-    void set_pins(int pin1, int pin2, int pin_enc);
-    void set_encoder_pin(int pin);
+    // void set_pins(int pin1, int pin2, int pin_enc);
+    // void set_encoder_pin(int pin);
     
-    int set_pwm(int &pwm_val);
+    int set_pwm(int pwm_val);
     int getpin1();
     int getpin2();
+    uint8_t getpin1_channel();
+    uint8_t getpin2_channel();
     int absolute(int value);
     motor(/* args */);
 };

@@ -6,14 +6,19 @@ rclc_support_t support;
 rcl_allocator_t allocator;
 rcl_node_t node;
 rclc_executor_t executor;
+QueueHandle_t q_handle_1;
 
 void cmd_vel_cb(const void *received_msg){
     const geometry_msgs__msg__Twist *msg = (const geometry_msgs__msg__Twist *) received_msg;
     // cmd_vel_msg = *msg;
-    Serial.println("Angular Z:");
-    Serial.println(msg->angular.z);
-    Serial.println("Linear X:");
-    Serial.println(msg->linear.x);
+    log_i("Angular Z:");
+    log_i("%d", msg->angular.z);
+    log_i("Linear X:");
+    log_i("%d", msg->linear.x);
+    if (xQueueSend(q_handle_1, msg, 10) != pdPASS)
+    {
+        Serial.println("Failed to send queue");
+    } else { Serial.println("Sending queue success!"); }
     // Serial.println("Angular Z Saved:");
     // Serial.println(cmd_vel_msg.angular.z);
     // Serial.println("Linear X Saved:");
@@ -29,6 +34,7 @@ void errorHandle(){
 }
 
 void TaskROS(void *pvParam){
+    q_handle_1 = (QueueHandle_t) pvParam;
     IPAddress agent_ip(192, 168, 40, 103);
     set_microros_wifi_transports("Nintendo", "papahbaik", agent_ip, 8888);
     allocator = rcl_get_default_allocator();
