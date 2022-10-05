@@ -4,16 +4,19 @@
 
 void TaskExecute(void *pvParam);
 void TaskROS(void *pvParam);
+QueueHandle_t cmd_vel_queue;
 
 void setup() {
   // put your setup code here, to run once:
-  Serial.begin(115200);
+  // Serial.begin(115200);
+
+  cmd_vel_queue = xQueueCreate(10, sizeof(geometry_msgs__msg__Twist));
 
   xTaskCreatePinnedToCore(
     TaskExecute,
     "Execute",
-    1024,
-    NULL,
+    3*1024,
+    (void *) cmd_vel_queue,
     1,
     NULL,
     ARDUINO_RUNNING_CORE
@@ -23,7 +26,7 @@ void setup() {
     TaskROS,
     "ROS",
     5*1024, //Minimal 10kB for ROS
-    NULL,
+    (void *) cmd_vel_queue,
     1,
     NULL,
     ARDUINO_RUNNING_CORE
