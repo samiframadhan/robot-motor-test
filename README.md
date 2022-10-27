@@ -4,4 +4,5 @@ Petunjuk penggunaan dapat dilihat pada channel Youtube saya dengan urutan sebaga
 2. Setup Micro ROS Agent https://youtu.be/UpR2hKKxX2M
 
 Jika ada yang ingin ditanyakan boleh lewat Youtube ataupun lewat email: samifr@nintendo.my.id
+
 PCB Rangkaian Robot Mecanum dapat dibeli disini https://tokopedia.link/EFIO6r9Ssub
